@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/stackbuilders/sshd-lint.svg)](https://travis-ci.org/stackbuilders/sshd-lint)
+
 # sshd-lint
 
 sshd-lint checks a sshd_config file for adherence to security best
