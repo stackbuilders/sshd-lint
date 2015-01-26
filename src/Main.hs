@@ -12,7 +12,7 @@ import Data.Maybe (fromMaybe)
 
 import Data.Version (showVersion)
 
-import System.SshdLint.Parse
+import Data.KeywordArgs.Parse
 import System.SshdLint.Check
 
 import qualified Data.Map as Map
