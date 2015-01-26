@@ -3,11 +3,9 @@
 # sshd-lint
 
 sshd-lint checks a sshd_config file for adherence to security best
-practices. It can be
+practices.
 
-## Wat?
-
-Weird things in ssh config file parsing
+## Wat? Weird things happen in ssh config file parsing.
 
 sshd has two checking modes, -t and -T. Neither one alerts if config
 directives are repeated, regardless of whether the value being
@@ -23,6 +21,8 @@ duplicate lines.
 PasswordAuthentication yes
 PasswordAuthentication no
 ```
+
+sshd-lint takes the weird sshd parsing into account to make sure that settings adhere to best practices. It also lets you know if there are duplicated lines which may lead to unexpected behavior from the SSH daemon.
 
 ## sshd-lint's Best Practices
 
@@ -58,6 +58,10 @@ project matures.**
 ## Author
 
 Justin Leitgeb
+
+## License
+
+MIT
 
 ## Copyright
 
