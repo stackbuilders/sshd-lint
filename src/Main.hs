@@ -83,6 +83,8 @@ runCheck file = do
 
   f <- readFile file
 
+  putStrLn $ "Checking " ++ file ++ ":\n"
+
   case parseConfig f of
     Left e -> putStrLn $ "Parse error: " ++ show e
     Right config -> do
