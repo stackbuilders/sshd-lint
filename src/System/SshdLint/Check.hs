@@ -2,7 +2,7 @@ module System.SshdLint.Check
        ( duplicatedValues
        , activeSettings
        , recommendations
-       , defaultAcceptedValues ) where
+       , defaultAcceptedValues, checkSafeSetting ) where
 
 import Data.Char (toLower)
 
@@ -35,25 +35,34 @@ activeSettings =
   where registerSetting (configOption, value) =
           Map.insert (map toLower configOption) value
 
+-- | Given a collection of recommendation strings and a current
+-- setting, returns a new list of recommendations with new
+-- recommendations added depending on the setting of the given
+-- configOption and value.
+checkSafeSetting :: Map.Map String String
+                 -> String
+                 -> String
+                 -> [String]
+                 -> [String]
+checkSafeSetting recs configOption value previousRecommendations =
+  let recommendation = Map.lookup configOption recs in
+
+  case recommendation of
+    Nothing -> previousRecommendations
+    Just r -> if r == value then
+                previousRecommendations
+              else
+                previousRecommendations ++ [ configOption ++ " should be "
+                                             ++ r ++ ", found " ++ value ]
+
+
 recommendations :: RecommendedSettings -> ActiveSettings -> [String]
-recommendations recommendedSettings activeSettings =
+recommendations recommendedSettings settings =
   Map.foldWithKey (checkSafeSetting normalizedRecommendedSettings) []
-                  normalizedActiveSettings
+                  normalizedSettings
 
-  where checkSafeSetting recs configOption value recommendations =
-          let recommendation = Map.lookup configOption recs in
-
-          case recommendation of
-            Nothing -> recommendations
-            Just r -> if r == value then
-                        recommendations
-                      else
-                        recommendations ++
-                        [ configOption ++ " should be " ++ r ++ ", found " ++
-                          value ]
-
-        normalizedRecommendedSettings = lowerCaseMapKeys recommendedSettings
-        normalizedActiveSettings = lowerCaseMapKeys activeSettings
+  where normalizedRecommendedSettings = lowerCaseMapKeys recommendedSettings
+        normalizedSettings = lowerCaseMapKeys settings
 
 
 -- | Some values legitimately appear multiple times in the configuration.
@@ -64,13 +73,13 @@ checkDuplicate :: String
                -> (Set.Set String, Set.Set String)
                -> (Set.Set String, Set.Set String)
 
-checkDuplicate aValue (allValues, duplicatedValues) =
+checkDuplicate aValue (allValues, dupes) =
   if Set.notMember loweredValue allowedDuplicates &&
      Set.member loweredValue allValues then
 
-    (allValues, Set.insert loweredValue duplicatedValues)
+    (allValues, Set.insert loweredValue dupes)
   else
-    (Set.insert loweredValue allValues, duplicatedValues)
+    (Set.insert loweredValue allValues, dupes)
 
   where loweredValue = map toLower aValue
 

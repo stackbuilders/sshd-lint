@@ -5,10 +5,8 @@ import System.Console.GetOpt
 
 import System.Environment (getArgs, getProgName)
 import System.Exit (ExitCode(..), exitWith, exitSuccess)
-import System.IO.Error (ioError)
 
 import Paths_sshd_lint (version)
-import Data.Maybe (fromMaybe)
 
 import Data.Version (showVersion)
 
@@ -18,13 +16,9 @@ import System.SshdLint.Check
 import qualified Data.Map as Map
 import qualified Data.Set as Set
 
-import Control.Monad (mapM_, unless)
+import Control.Monad (unless)
 
-import Text.Parsec
-
-import Text.ParserCombinators.Parsec.Error(ParseError, Message,
-                                           errorMessages, messageEq)
-
+import Text.Parsec (ParseError, parse)
 
 {-# ANN module "HLint: ignore Use string literal" #-}
 
@@ -34,6 +28,7 @@ data Options = Options
     , optFile        :: FilePath
     } deriving Show
 
+defaultOptions :: Options
 defaultOptions = Options
     { optShowVersion = False
     , optShowHelp    = False
@@ -53,6 +48,7 @@ options =
     "show help"
   ]
 
+showHelp :: IO ()
 showHelp = do
   prg <- getProgName
   putStrLn (usageInfo prg options)
