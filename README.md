@@ -46,7 +46,6 @@ UsePrivilegeSeparation yes
 
 ## Output
 
-
 If sshd-lint has any suggestions they will be printed to standard
 output. The return value of the program will be `1` if there are
 suggestions.
