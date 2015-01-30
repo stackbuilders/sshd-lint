@@ -24,6 +24,7 @@ executable sshd-lint
                        , parsec >= 3.1.0 && <= 3.2
                        , keyword-args >= 0.1.0.0 && < 0.2.0.0
                        , containers
+                       , nagios-check
 
   hs-source-dirs:      src
   default-language:    Haskell2010
@@ -39,6 +40,7 @@ test-suite sshd-lint-test
                        , parsec >= 3.1.0 && <= 3.2
                        , keyword-args >= 0.1.0.0 && < 0.2.0.0
                        , containers
+                       , nagios-check
 
                        , hspec
 

@@ -22,16 +22,17 @@ PasswordAuthentication yes
 PasswordAuthentication no
 ```
 
-sshd-lint takes the weird sshd parsing into account to make sure that
-settings adhere to best practices. It also lets you know if there are
-duplicated lines which may lead to unexpected behavior from the SSH
-daemon.
+sshd-lint takes the weird sshd parsing into account and makes sure
+that settings adhere to best practices. It also lets you know if there
+are duplicated lines which may lead to unexpected behavior from the
+SSH daemon.
 
 ## sshd-lint's Best Practices
 
-There should be no duplicate lines present in the ssh config
-file. Currently the following settings are considered best practices
-by `sshd-lint`.
+There should be no duplicate lines present in the ssh config file
+(with the exception of the HostKey configuration option, which we
+ignore). Currently the following settings are considered best
+practices by `sshd-lint`.
 
 ```
 PermitEmptyPasswords no
@@ -69,7 +70,16 @@ by specifying it after the `-f` argument, eg:
 sshd-lint -f /tmp/new_sshd_config
 ```
 
+`sshd_lint` supports a Nagios output mode, which can be enabled with
+the `-n` flag.
+
 Other options can be seen by invoking `sshd_lint` with the `-h` flag.
+
+## Other Reading
+
+Many of the sshd best practices come from the article, (Top 20 OpenSSH
+Server Best Security
+Practices)[http://www.cyberciti.biz/tips/linux-unix-bsd-openssh-server-best-practices.html].
 
 
 ## Author

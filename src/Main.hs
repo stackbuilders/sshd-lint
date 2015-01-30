@@ -1,5 +1,6 @@
-module Main where
+{-# LANGUAGE OverloadedStrings #-}
 
+module Main where
 
 import System.Console.GetOpt
 
@@ -16,15 +17,15 @@ import System.SshdLint.Check
 import qualified Data.Map as Map
 import qualified Data.Set as Set
 
-import Control.Monad (unless)
+import Control.Monad (unless, when)
+import System.Nagios.Plugin
 
 import Text.Parsec (ParseError, parse)
-
-{-# ANN module "HLint: ignore Use string literal" #-}
 
 data Options = Options
     { optShowVersion :: Bool
     , optShowHelp    :: Bool
+    , optNagios      :: Bool
     , optFile        :: FilePath
     } deriving Show
 
@@ -32,20 +33,24 @@ defaultOptions :: Options
 defaultOptions = Options
     { optShowVersion = False
     , optShowHelp    = False
+    , optNagios      = False
     , optFile        = "/etc/ssh/sshd_config"
     }
 
 options :: [OptDescr (Options -> Options)]
 options =
-  [ Option ['V'] ["version"] (NoArg (\opts -> opts { optShowVersion = True }))
+  [ Option "V" ["version"] (NoArg (\opts -> opts { optShowVersion = True }))
     "show version number"
 
-  , Option ['f'] ["file"]
+  , Option "f" ["file"]
     (ReqArg (\f opts -> opts { optFile = f })
      "FILE") "input FILE"
 
-  , Option ['h'] ["help"]    (NoArg (\opts -> opts { optShowHelp = True }))
+  , Option "h" ["help"]    (NoArg (\opts -> opts { optShowHelp = True }))
     "show help"
+
+  , Option "n" ["nagios"]    (NoArg (\opts -> opts { optNagios = True }))
+    "display output in Nagios-consumable format"
   ]
 
 showHelp :: IO ()
@@ -78,12 +83,12 @@ printResult msg errs =
       mapM_ (\err -> putStrLn $ "\t* " ++ err) errs
       putStr "\n"
 
-runCheck :: FilePath -> IO ()
-runCheck file = do
+runCheck :: Options -> IO ()
+runCheck opts = do
 
-  f <- readFile file
+  f <- readFile $ optFile opts
 
-  putStrLn $ "Checking " ++ file ++ ":\n"
+  unless (optNagios opts) $ putStrLn ("Checking " ++ optFile opts ++ ":\n")
 
   case parseConfig f of
     Left e -> putStrLn $ "Parse error: " ++ show e
@@ -92,17 +97,26 @@ runCheck file = do
           recs = recommendations (Map.fromList defaultAcceptedValues) $
                  activeSettings config
 
-      printResult "insecure settings" recs
-      printResult "duplicate values" dupVals
+      unless (optNagios opts) $ do
+        printResult "insecure settings" recs
+        printResult "duplicate values" dupVals
 
       if (not . null) dupVals || (not . null) recs
-        then
-          do
-            putStrLn $ show (length (recs ++ dupVals)) ++ " suggestions"
-            exitWith (ExitFailure 1)
+        then if optNagios opts
+             then
+               runNagiosPlugin (sshdSafeCheck $ length $ recs ++ dupVals)
+
+             else do
+               putStrLn $ show (length (recs ++ dupVals)) ++ " suggestions"
+               exitWith (ExitFailure 1)
+
         else
           putStrLn "No suggestions"
 
+sshdSafeCheck :: Int -> NagiosPlugin ()
+sshdSafeCheck errorCount =
+  when (errorCount > 0) $
+    addResult Critical "Security warnings found in sshd_config"
 
 main :: IO ()
 main = do
@@ -118,4 +132,4 @@ main = do
       putStrLn $ name ++ " " ++ showVersion version ++
       " (C) 2015 Stack Builders Inc."
     else
-      runCheck $ optFile $ fst opts
+      runCheck $ fst opts
