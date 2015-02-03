@@ -2,8 +2,17 @@
 
 # sshd-lint
 
-`sshd-lint` checks a sshd_config file for adherence to security best
-practices.
+The ssh daemon is the front door to your servers. It's unfortunate that 
+the configuration file for this important part of your system is unhelpful 
+in detecting settings that are almost always a bad idea. `sshd-lint` checks 
+a `sshd_config` file for adherence to security best practices. It warns 
+about repeated configuration lines, contradictory settings in the same file, 
+and settings that don't adhere to best practices.
+
+It can be run from the command line to show suggestions for your `sshd_config`
+file, or an option can be provided to emit nagios-compatible output so that 
+any changes deviating from best practices will be detected by a monitoring 
+system.
 
 ## Wat? Weird things happen in ssh config file parsing.
 
