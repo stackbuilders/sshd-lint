@@ -52,9 +52,31 @@ you can install haskell-platform with homebrew or from
 
 Then, install sshd-lint from [Hackage](http://hackage.haskell.org/).
 
+To install `sshd-lint` in your `~/.cabal/bin` directory:
+
 ```
 cabal update && cabal install sshd-lint
 ```
+
+This will install `sshd-lint` in your `~/.cabal/bin`, which you should
+add to your PATH. Alternatively you can install in `/usr/local/bin` by
+using the --global option on `cabal install`.
+
+## Usage
+
+Invoking `sshd-lint` without any arguments defaults to checking
+`/etc/ssh/sshd_config`, which should be present on most systems
+running OpenSSH. You can run `sshd_lint` on any configuration file
+by specifying it after the `-f` argument, eg:
+
+```
+sshd-lint -f /tmp/new_sshd_config
+```
+
+`sshd_lint` supports a Nagios output mode, which can be enabled with
+the `-n` flag.
+
+Other options can be seen by invoking `sshd_lint` with the `-h` flag.
 
 ## sshd-lint's Best Practices
 
@@ -87,22 +109,6 @@ suggestions, and the return value will be `0`.
 so it is suggested that scripts using sshd-lint depend on the return
 value, but not necessarily the exact formatting of output until the
 project matures.**
-
-## Usage
-
-Invoking `sshd-lint` without any arguments defaults to checking
-`/etc/ssh/sshd_config`, which should be present on most systems
-running OpenSSH. You can run `sshd_lint` on any configuration file
-by specifying it after the `-f` argument, eg:
-
-```
-sshd-lint -f /tmp/new_sshd_config
-```
-
-`sshd_lint` supports a Nagios output mode, which can be enabled with
-the `-n` flag.
-
-Other options can be seen by invoking `sshd_lint` with the `-h` flag.
 
 ## Other Reading
 
