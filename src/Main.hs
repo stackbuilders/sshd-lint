@@ -71,7 +71,7 @@ lintOpts argv = do
     (_, _, errs) ->
       ioError (userError (concat errs ++ usageInfo (headerMessage name) options))
 
-parseConfig :: String -> Either ParseError [(String, String)]
+parseConfig :: String -> Either ParseError [(String, [String])]
 parseConfig = parse configParser "(unknown)"
 
 printResult :: String -> [String] -> IO ()

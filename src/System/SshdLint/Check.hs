@@ -2,33 +2,34 @@ module System.SshdLint.Check
        ( duplicatedValues
        , activeSettings
        , recommendations
-       , defaultAcceptedValues, checkSafeSetting ) where
+       , defaultAcceptedValues
+       , checkSafeSetting ) where
 
 import Data.Char (toLower)
 
 import qualified Data.Map as Map
 import qualified Data.Set as Set
 
-type RecommendedSettings = Map.Map String String
-type ActiveSettings      = Map.Map String String
+type RecommendedSettings = Map.Map String [String]
+type ActiveSettings      = Map.Map String [String]
 
 
-defaultAcceptedValues :: [(String, String)]
+defaultAcceptedValues :: [(String, [String])]
 defaultAcceptedValues =
-  [ ("PermitEmptyPasswords", "no")
-  , ("PasswordAuthentication", "no")
-  , ("HostbasedAuthentication", "no")
-  , ("PermitRootLogin", "no")
-  , ("IgnoreRhosts", "yes")
-  , ("Protocol", "2")
-  , ("StrictModes", "yes")
-  , ("UsePrivilegeSeparation", "yes") ]
+  [ ("PermitEmptyPasswords", ["no"])
+  , ("PasswordAuthentication", ["no"])
+  , ("HostbasedAuthentication", ["no"])
+  , ("PermitRootLogin", ["no"])
+  , ("IgnoreRhosts", ["yes"])
+  , ("Protocol", ["2"])
+  , ("StrictModes", ["yes"])
+  , ("UsePrivilegeSeparation", ["yes"]) ]
 
 duplicatedValues :: [String] -> Set.Set String
 duplicatedValues values =
   snd $ foldr checkDuplicate (Set.empty, Set.empty) values
 
-activeSettings :: [(String, String)] -> ActiveSettings
+activeSettings :: [(String, [String])] -> ActiveSettings
 activeSettings =
   foldr registerSetting Map.empty
 
@@ -39,21 +40,22 @@ activeSettings =
 -- setting, returns a new list of recommendations with new
 -- recommendations added depending on the setting of the given
 -- configOption and value.
-checkSafeSetting :: Map.Map String String
-                 -> String
+checkSafeSetting :: Map.Map String [String]
                  -> String
                  -> [String]
                  -> [String]
-checkSafeSetting recs configOption value previousRecommendations =
+                 -> [String]
+checkSafeSetting recs configOption values previousRecommendations =
   let recommendation = Map.lookup configOption recs in
 
   case recommendation of
     Nothing -> previousRecommendations
-    Just r -> if r == value then
+    Just r -> if Set.fromList r == Set.fromList values then
                 previousRecommendations
               else
                 previousRecommendations ++ [ configOption ++ " should be "
-                                             ++ r ++ ", found " ++ value ]
+                                             ++ show r ++ ", found " ++
+                                             show values ]
 
 
 recommendations :: RecommendedSettings -> ActiveSettings -> [String]
@@ -83,5 +85,5 @@ checkDuplicate aValue (allValues, dupes) =
 
   where loweredValue = map toLower aValue
 
-lowerCaseMapKeys :: Map.Map String String -> Map.Map String String
+lowerCaseMapKeys :: Map.Map String [String] -> Map.Map String [String]
 lowerCaseMapKeys = Map.mapKeys (map toLower)

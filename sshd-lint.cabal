@@ -22,7 +22,7 @@ executable sshd-lint
 
   build-depends:         base >=4.5 && <4.8
                        , parsec >= 3.1.0 && <= 3.2
-                       , keyword-args >= 0.1.0.0 && < 0.2.0.0
+                       , keyword-args >= 0.2.0.0 && < 0.3.0.0
                        , containers
                        , nagios-check
 
@@ -38,7 +38,7 @@ test-suite sshd-lint-test
   main-is: Spec.hs
   build-depends:       base >=4.5 && <4.8
                        , parsec >= 3.1.0 && <= 3.2
-                       , keyword-args >= 0.1.0.0 && < 0.2.0.0
+                       , keyword-args >= 0.2.0.0 && < 0.3.0.0
                        , containers
                        , nagios-check
 

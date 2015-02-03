@@ -30,22 +30,27 @@ spec =
 
     describe "activeSettings" $
       it "returns settings based on their first occurrence in the list" $
-        activeSettings [ ("PermitEmptyPasswords", "yes")
-                       , ("PermitEmptyPasswords", "no") ]
-        `shouldBe` Map.fromList [ ("permitemptypasswords", "yes") ]
+        activeSettings [ ("PermitEmptyPasswords", ["yes"])
+                       , ("PermitEmptyPasswords", ["no"]) ]
+        `shouldBe` Map.fromList [ ("permitemptypasswords", ["yes"]) ]
 
     describe "recommendations" $ do
       it "returns all settings that are unsafe, along with better alternatives" $
-        recommendations (Map.fromList [("permitemptypasswords", "no")])
-          (Map.fromList [("permitemptypasswords", "yes")])
-          `shouldBe` ["permitemptypasswords should be no, found yes"]
+        recommendations (Map.fromList [("permitemptypasswords", ["no"])])
+          (Map.fromList [("permitemptypasswords", ["yes"])])
+          `shouldBe` ["permitemptypasswords should be [\"no\"], found [\"yes\"]"]
 
       it "finds recommendations even when there are case differences" $
-        recommendations (Map.fromList [("PermitEmptyPasswords", "no")])
-          (Map.fromList [("permitemptypasswords", "yes")])
-          `shouldBe` ["permitemptypasswords should be no, found yes"]
+        recommendations (Map.fromList [("PermitEmptyPasswords", ["no"])])
+          (Map.fromList [("permitemptypasswords", ["yes"])])
+          `shouldBe` ["permitemptypasswords should be [\"no\"], found [\"yes\"]"]
 
       it "passes over config options for which we have no recommendations" $
         recommendations Map.empty
-          (Map.fromList [("permitemptypasswords", "yes")])
+          (Map.fromList [("permitemptypasswords", ["yes"])])
+          `shouldBe` [ ]
+
+      it "doesn't care about ordering of values" $
+        recommendations (Map.fromList [("AcceptEnv", ["LANG", "LC_*"])])
+          (Map.fromList [("acceptenv", ["LC_*", "LANG"])])
           `shouldBe` [ ]
