@@ -7,15 +7,21 @@ practices.
 
 ## Wat? Weird things happen in ssh config file parsing.
 
+Like [in JavaScript](https://www.destroyallsoftware.com/talks/wat),
+trying to understand how sshd reads your configuration file leads to
+several "Wat?" moments.
+
+### Wat #1 - Earliest option wins for some settings
+
 sshd has two checking modes, -t and -T. Neither one alerts if config
 directives are repeated, regardless of whether the value being
 assigned is the same or different.
 
-If you have two different values for a config file value, the *first*
-one takes effect (wat?). So the following allows cleartext passwords,
-but putting the directives in the other order turns off cleartext
-passwords. Again, there is no warning nor error from sshd abouth the
-duplicate lines.
+If you have two different values for some config file value, the
+*first* one takes effect (wat?). So the following allows cleartext
+passwords, but putting the directives in the other order turns off
+cleartext passwords. Again, there is no warning nor error from sshd
+abouth the duplicate lines.
 
 ```
 PasswordAuthentication yes
@@ -26,6 +32,16 @@ sshd-lint takes the weird sshd parsing into account and makes sure
 that settings adhere to best practices. It also lets you know if there
 are duplicated lines which may lead to unexpected behavior from the
 SSH daemon.
+
+### Wat #2 - No warning for contradictory settings
+
+sshd allows contradictory settings. Fortunately, for certain options
+like AllowUser, AllowGroup, DenyUser and DenyGroup, the most
+restrictive option takes effect. Still, it's a bit unexpected that if
+you add user 'joe' to both AllowUser and DenyUser, joe is Denied
+without any warning that you told sshd to use contradictory settings.
+
+sshd-lint considers contradictory settings to be an error.
 
 ## sshd-lint's Best Practices
 
