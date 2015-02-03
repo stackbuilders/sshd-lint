@@ -45,6 +45,13 @@ sshd-lint considers contradictory settings to be an error.
 
 ## Installation
 
+If you don't have the Haskell platform installed, you'll need to
+install it. On Ubuntu, `apt-get install haskell-platform`. On Mac OS,
+you can install haskell-platform with homebrew or from
+[the pkg file](https://www.haskell.org/platform/mac.html).
+
+Then, install sshd-lint from [Hackage](http://hackage.haskell.org/).
+
 ```
 cabal update && cabal install sshd-lint
 ```
