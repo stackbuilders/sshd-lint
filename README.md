@@ -2,7 +2,7 @@
 
 # sshd-lint
 
-sshd-lint checks a sshd_config file for adherence to security best
+`sshd-lint` checks a sshd_config file for adherence to security best
 practices.
 
 ## Wat? Weird things happen in ssh config file parsing.
