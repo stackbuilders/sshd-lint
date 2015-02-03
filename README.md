@@ -43,6 +43,12 @@ without any warning that you told sshd to use contradictory settings.
 
 sshd-lint considers contradictory settings to be an error.
 
+## Installation
+
+```
+cabal update && cabal install sshd-lint
+```
+
 ## sshd-lint's Best Practices
 
 There should be no duplicate lines present in the ssh config file
