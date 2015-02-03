@@ -93,9 +93,9 @@ Other options can be seen by invoking `sshd_lint` with the `-h` flag.
 
 ## Other Reading
 
-Many of the sshd best practices come from the article, (Top 20 OpenSSH
+Many of the sshd best practices come from the article, [Top 20 OpenSSH
 Server Best Security
-Practices)[http://www.cyberciti.biz/tips/linux-unix-bsd-openssh-server-best-practices.html].
+Practices]*http://www.cyberciti.biz/tips/linux-unix-bsd-openssh-server-best-practices.html).
 
 
 ## Author
