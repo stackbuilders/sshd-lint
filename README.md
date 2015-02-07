@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/stackbuilders/sshd-lint.svg)](https://travis-ci.org/stackbuilders/sshd-lint)
+[![Build Status](https://travis-ci.org/stackbuilders/sshd-lint.svg)](https://travis-ci.org/stackbuilders/sshd-lint) [![Hackage](https://img.shields.io/hackage/v/sshd-lint.svg)](http://hackage.haskell.org/package/sshd-lint)
 
 # sshd-lint
 
