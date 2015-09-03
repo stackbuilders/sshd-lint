@@ -36,14 +36,14 @@ spec =
 
     describe "recommendations" $ do
       it "returns all settings that are unsafe, along with better alternatives" $
-        recommendations (Map.fromList [("permitemptypasswords", ["no"])])
+        recommendations (Map.fromList [("permitemptypasswords", [["no"]])])
           (Map.fromList [("permitemptypasswords", ["yes"])])
-          `shouldBe` ["permitemptypasswords should be [\"no\"], found [\"yes\"]"]
+          `shouldBe` ["permitemptypasswords should be [[\"no\"]], found [[\"yes\"]]"]
 
       it "finds recommendations even when there are case differences" $
-        recommendations (Map.fromList [("PermitEmptyPasswords", ["no"])])
+        recommendations (Map.fromList [("PermitEmptyPasswords", [["no"]])])
           (Map.fromList [("permitemptypasswords", ["yes"])])
-          `shouldBe` ["permitemptypasswords should be [\"no\"], found [\"yes\"]"]
+          `shouldBe` ["permitemptypasswords should be [[\"no\"]], found [[\"yes\"]]"]
 
       it "passes over config options for which we have no recommendations" $
         recommendations Map.empty
@@ -51,6 +51,19 @@ spec =
           `shouldBe` [ ]
 
       it "doesn't care about ordering of values" $
-        recommendations (Map.fromList [("AcceptEnv", ["LANG", "LC_*"])])
+        recommendations (Map.fromList [("AcceptEnv", [["LANG", "LC_*"]])])
           (Map.fromList [("acceptenv", ["LC_*", "LANG"])])
           `shouldBe` [ ]
+
+      it "allows to have more than one allowed default value in the defaultAcceptedValues" $ do
+        recommendations (Map.fromList [("PermitRootLogin", [["no"], ["without-password"]])])
+          (Map.fromList [("PermitRootLogin", ["no"])])
+          `shouldBe` [ ]
+        recommendations (Map.fromList [("PermitRootLogin", [["no"], ["without-password"]])])
+          (Map.fromList [("PermitRootLogin", ["without-password"])])
+          `shouldBe` [ ]
+
+      it "doesn't allow an invalid value if it's not in the allowed values" $
+        recommendations (Map.fromList [("PermitRootLogin", [["no"], ["without-password"]])])
+          (Map.fromList [("PermitRootLogin", ["yes"])])
+          `shouldBe` ["permitrootlogin should be [[\"no\"],[\"without-password\"]], found [[\"yes\"]]"]
