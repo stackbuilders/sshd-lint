@@ -51,15 +51,12 @@ checkSafeSetting recs configOption values previousRecommendations =
 
   case recommendation of
     Nothing -> previousRecommendations
-    Just r  -> do
-      let val = Set.fromList $ head values 
-      let allowed = map Set.fromList r
-      if val `elem` allowed then
-        previousRecommendations
-      else
-        previousRecommendations ++ [ configOption ++ " should be "
-                                     ++ show r ++ ", found " ++
-                                     show values ]
+    Just r  ->  if (Set.fromList $ concat values) `Set.isSubsetOf` (Set.fromList $ concat r) then
+                  previousRecommendations
+                else
+                  previousRecommendations ++ [ configOption ++ " should be "
+                                              ++ show r ++ ", found " ++
+                                              show values ]
 
 
 recommendations :: RecommendedSettings -> ActiveSettings -> [String]
